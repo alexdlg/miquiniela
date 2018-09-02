@@ -66,10 +66,7 @@ if ($_SESSION['quiniela_matona_admin'] != "1")
 				else
 				  $Costo = "$ " . number_format($renglon_grupos['Costo'],2);
 				  
-				if ($trcolor == "#FFFFFF")
-				  $trcolor = "#EAEAEA";
-				else
-				  $trcolor = "#FFFFFF";
+				
 				echo '<tr bgcolor="'.$trcolor.'">
 					    <td align="left">
 						  '.$renglon_grupos['NombreGrupo'].'
