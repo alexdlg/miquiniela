@@ -1,0 +1,382 @@
+<?php
+session_start();
+include("include/init.php");
+$SessionID = $_REQUEST['session_id'];
+$SessionURL = "session_id=" . $SessionID;
+$currentFile = $_SERVER['SCRIPT_NAME'];
+//$URL = "http://www.laquinieladelgordo.com/web_off_2018/";
+
+$IDLiga  = $_SESSION['quiniela_matona_idliga'];
+if ($IDLiga == "")
+  {
+    $IDLiga = 1;
+	$_SESSION['quiniela_matona_idliga'] = 1;	
+  }
+  
+switch ($IDLiga)
+{
+	case "1": 
+	  {
+		$LogoMX = "images/Gliga-mx-on.png";
+		$LogoChampions = "images/Gliga-champ-off.png";
+		$LogoNFL = "images/Gliga-nfl-off.png";
+		$fondoLQDG = "images/background-mx.png";		
+	  } break;
+	case "2": 
+	  {
+		$LogoMX = "images/Gliga-mx-off.png";
+		$LogoChampions = "images/Gliga-champ-on.png";
+		$LogoNFL = "images/Gliga-nfl-off.png";
+		$fondoLQDG = "images/background-champions.png";		
+	  } break;
+	case "8": 
+	  {
+		$LogoMX = "images/Gliga-mx-off.png";
+		$LogoChampions = "images/Gliga-champ-off.png";
+		$LogoNFL = "images/Gliga-nfl-on.png";
+		$fondoLQDG = "images/background-nfl.png";		
+	  } break;
+}
+
+$sql = "SELECT * 
+		FROM
+		  jornadas AS j,
+		  temporada AS t,
+		  ligas AS l
+		WHERE 
+		  j.IDLiga = l.IDLiga AND
+		  j.IDTemporada = t.IDTemporada AND
+		  j.IDLiga = t.IDLiga AND
+		  t.Status = '1' AND
+		  j.Status = '1' AND
+		  l.IDLiga = '$IDLiga'
+		";
+$consulta_jornada = mysql_query($sql);
+$renglon_jornada = mysql_fetch_assoc($consulta_jornada);
+$IDJornada = $renglon_jornada['IDJornada'];
+
+
+require_once "web/fb-sdk/src/Facebook/autoload.php";
+
+$fb = new Facebook\Facebook([
+  'app_id' => '930159273773842', // Replace {app-id} with your app id
+  'app_secret' => '35181393b01a46181c9c2ff2ce9ec7a3',
+  'default_graph_version' => 'v2.2',
+  ]);
+
+$helper = $fb->getRedirectLoginHelper();
+
+$permissions = ['email']; // Optional permissions
+$loginUrl = $helper->getLoginUrl('http://www.laquinieladelgordo.com/web/fb-sdk/fb-callback.php', $permissions);
+
+
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>La Quiniela del Gordo</title>
+<!-- Required meta tags -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+<!-- Ad Sense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-6230236180458650",
+    enable_page_level_ads: true
+  });
+</script>
+
+<!-- Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-113160224-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-113160224-1');
+</script>
+
+
+</head>
+
+<style>
+body
+{
+	font-family:Verdana, Geneva, sans-serif;
+	background: url(<?php echo $fondoLQDG;?>) no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.texto_logueo
+{
+  text-shadow: 2px 2px 5px black;
+  color:#FFF;
+}
+
+.pie a
+{
+  text-shadow: 2px 2px 5px black;
+  color:#FFF;
+  text-decoration:none;
+}
+
+.pie a:hover
+{
+  color:#F00026;	
+}
+
+a 
+{
+	color:#000;
+}
+
+a:hover
+{
+  color:#F00026;	
+}
+</style>
+<!-- AQUI VIENE LO DEL FANCYBOX PARA EL TUTORIAL ------------------------------------------------------------------>
+<!-- Add jQuery library -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="js/cquery.min.js?ver=201806072"></script>
+<link type="text/css" rel="stylesheet" href="css/estilos.css" />
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+
+<!-- Add mousewheel plugin (this is optional) -->
+<script type="text/javascript" src="/fancybox/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+
+<!-- Add fancyBox -->
+<link rel="stylesheet" href="/fancybox/source/jquery.fancybox.css?v=2.1.5&v2=20170925_1" type="text/css" media="screen" />
+<script type="text/javascript" src="/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+<script language="javascript">
+$(document).ready(function() {
+	$(".detalle").fancybox({
+		maxWidth	: 600,
+		maxHeight	: 400,
+		fitToView	: false,
+		width		: '90%',
+		height		: '90%',
+		autoSize	: false,
+		topRatio    : 0,
+		closeClick	: true,
+		openEffect	: 'none',
+		closeEffect	: 'none',
+		helpers   : { 
+					   overlay : {closeClick: false} // prevents closing when clicking OUTSIDE fancybox 
+				    }
+	});
+	
+$(document).ready(function() {
+	$(".various").fancybox({
+		maxWidth	: 800,
+		maxHeight	: 600,
+		fitToView	: true,
+		width		: '100%',
+		height		: '100%',
+		autoSize	: true,
+		closeClick	: false,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+	
+});</script>
+<!-- AQUI TERMINA LO DEL FANCYBOX PARA EL TUTORIAL ------------------------------------------------------------------>
+
+<body>
+<input type="hidden" id="txtIDJornada" value="<?php echo $IDJornada;?>" />
+<input type="hidden" id="session_id_origen" value="<?php echo $SessionID;?>" />
+
+
+<div class="container-hr">
+    <div class="container-fluid">
+        <div class="row ">
+            <div class="col-md-3" align="center">
+                <div class="container-fluid">                
+                  <img src="images/logo.png" class="img-fluid" />
+                </div>              
+            </div>
+            <div class="col-md-8" align="center">
+                <div class="container-fluid">
+                    <div class="container-hr">
+                        <div class="container-fluid">
+                            <div class="row "><div class="col-md-12">&nbsp;</div></div>
+                            <div class="row ">
+                                <div class="col-md-12 texto_logueo" align="right">
+                                  ¿Ya eres miembro? Ingresa Aqui
+                                </div>
+                            </div>
+                            <div class="row ">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-10" id="tabla-login">
+                                    <div class="container texto_logueo pie " align="right" >
+                                      <form class="form-inline align-content-end" action="login.php" method="post">
+                                        <div class="form-group">
+                                          <input type="email" class="form-control" id="email" placeholder="usuario" name="email" required>
+                                        </div>
+                                        &nbsp;&nbsp;
+                                        <div class="form-group">
+                                          <input type="password" class="form-control" id="pwd" placeholder="contraseña" name="pwd" required>
+                                        </div>
+                                        &nbsp;&nbsp;
+                                        <button type="submit" class="btn btn-dark">LOGIN</button>
+                                        &nbsp;&nbsp;ó&nbsp;&nbsp;
+										<?php echo '<a href="' . htmlspecialchars($loginUrl) . '"><img src="images/fb_login.png" width="150" ></a>';?>
+										<?php echo '<a href="twitter.php"><img src="images/tw_login.png" width="150"></a>';?>
+                                      </form>
+	                                  <a href="registro.php" class='various' data-fancybox-type='iframe'>¿Eres nuevo? Registrate Acá</a>
+                                    </div>
+								</div>
+							</div>
+                            <div class="row ">
+                                <div class="col-md-12 " align="right">
+                                </div>
+                            </div>
+
+
+                            
+                            <div class="row "><div class="col-md-12">&nbsp;</div></div>
+
+                            <div class="row">
+                                <div class="col-md-3" id="tabla-header">
+                                  <a href="que-es.php" class='detalle' data-fancybox-type='iframe'>¿Qué es LQDG?</a>
+                                </div>
+                                <div class="col-md-3" id="tabla-header">
+                                  <a href="como-es.php" class='detalle' data-fancybox-type='iframe'>¿Cómo se Juega?</a>
+                                </div>
+                                <div class="col-md-2" id="tabla-header">
+                                  <a href="quien-es.php" class='detalle' data-fancybox-type='iframe'>Contáctanos</a>
+                                </div>
+                                <div class="col-md-4" id="tabla-header">
+                                  <a href="http://www.fb.com/laquinieladelgordo" 
+                                  	 target="_blank"><img src="images/redes-facebook.png" 
+                                     					  class="img-fluid" /></a>
+                                  <a href="http://www.instagram.com/laquinieladelgordo" 
+                                  	 target="_blank"><img src="images/redes-instagram.png" 
+                                     					  class="img-fluid" /></a>
+                                  <a href="http://www.twitter.com/quinielaelgordo" 
+                                  	 target="_blank"><img src="images/redes-twitter.png" 
+                                     					  class="img-fluid" /></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>              
+            </div>
+            <div class="col-md-1" align="center"></div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="row "><div class="col-md-12">&nbsp;</div></div>
+        </div>
+    </div>
+</div>
+<div class="container">
+        <div class="row" id="tabla-ligas">
+            <div class="col-md-4" align="center">
+              <a href="favorito.php?idliga=1&url=<?php echo $currentFile;?>&<?php echo $SessionURL ;?>"><img src="<?php echo $LogoMX;?>" class="img-fluid" /></a>
+            </div>
+            <div class="col-md-4" align="center">
+              <a href="favorito.php?idliga=8&url=<?php echo $currentFile;?>&<?php echo $SessionURL ;?>"><img src="<?php echo $LogoNFL;?>" class="img-fluid" /></a>
+            </div>
+            <div class="col-md-4" align="center">
+              <a href="favorito.php?idliga=2&url=<?php echo $currentFile;?>&<?php echo $SessionURL ;?>"><img src="<?php echo $LogoChampions;?>" class="img-fluid" /></a>
+            </div>
+        </div>
+</div>
+<div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="row "><div class="col-md-12">&nbsp;</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="container">
+        <div class="row" id="tabla-ligas">        
+            <div class="col-md-3" >
+            </div>            
+            <div class="col-md-9" id="subtituloB">
+            
+            </div>                    
+        </div>
+        <div class="row ">
+            <div class="col-md-12" align="center" id="panelAFondo">
+                <div class="container-fluid" id="panelA">                
+                </div>              
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="row "><div class="col-md-12">&nbsp;</div></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid pie">
+    <div class="row align-items-center">
+      <div style="background-color:#000;" class="col text-center">
+        <br /><a href="aviso-de-privacidad.php" class='detalle' data-fancybox-type='iframe'>Aviso de Privacidad</a><br /><br />
+      </div>
+      <div style="background-color:#000;" class="col text-center">
+        <br /><a href="bases.php" class='detalle' data-fancybox-type='iframe'>Bases</a><br /><br />
+      </div>
+      <div style="background-color:#000;" class="col text-center">
+        <br /><font color="#FFFFFF">Terminos y Condiciones</font><br /><br />
+      </div>
+    </div>
+</div>    
+
+
+<div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="row "><div class="col-md-12">&nbsp;</div></div>
+        </div>
+    </div>
+</div>
+
+<link href="css/style.css" rel="stylesheet" />
+
+
+<!--
+<div id="sp-cookie-consent" class="position-bottom_right">
+  <div>
+    <div class="sp-cookie-consent-content">
+	  <img src="images/jugador-mundial.png" class="img-fluid" style="max-width:50%"  />
+    </div>
+  </div>
+</div>
+-->
+
+
+
+</body>
+</html>
+
+<script language="javascript">
+  actualiza_jornadas(1);
+</script>
