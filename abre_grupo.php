@@ -14,5 +14,5 @@ if (mysql_num_rows($consulta) > 0)
 	$_SESSION['quiniela_matona_idgrupo'] = $IDGrupo;
   }
   
-  
+  // comentario prueba
 ?>  
